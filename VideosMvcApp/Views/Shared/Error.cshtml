@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center text-danger">Error</h2>
+    <p class="text-center">@ViewBag.ErrorMessage</p>
+
+    @if (ViewData["ErrorDetails"] != null)
+    {
+        <div class="text-center mt-3">
+            <p><strong>Error Details:</strong></p>
+            <pre>@ViewData["ErrorDetails"]</pre>
+        </div>
+    }
+</div>

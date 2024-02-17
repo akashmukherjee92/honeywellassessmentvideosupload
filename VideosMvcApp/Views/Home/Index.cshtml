@@ -1,0 +1,74 @@
+﻿@model List<VideoModel>
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Akash Mukherjee - Honeywell Assessment for Upload Videos</h2>
+    <h2 class="text-center mb-4">Upload Videos</h2>
+    <form method="post" enctype="multipart/form-data" asp-action="Upload">
+        <div class="form-group">
+            <label for="files" class="font-weight-bold">Select Videos:</label>
+            <input type="file" class="form-control-file" name="files" id="files" multiple required />
+        </div>
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+
+    <hr class="my-4">
+    <h2 class="text-center mb-4">Honeywell Assessment - Video Catalog</h2>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach (var video in Model)
+        {
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">@video.FileName</h5>
+                        <button onclick="playVideo('@video.FileName')" class="btn btn-primary btn-sm me-2">Play Video</button>
+                        <button onclick="deleteVideo('@video.FileName')" class="btn btn-danger btn-sm me-2">Delete Video</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Play Video Modal -->
+<div class="modal fade" id="playVideoModal" tabindex="-1" role="dialog" aria-labelledby="playVideoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="playVideoModalLabel">Honeywell Assessment - Video Player</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <video controls width="100%" id="videoPlayer">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="@Url.Action("Index", "Home")" class="btn btn-primary">Back to Home</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function playVideo(videoFileName) {
+        var videoSource = document.getElementById('videoPlayer');
+        videoSource.setAttribute('src', '@Url.Action("Play", "Home")' + '?fileName=' + videoFileName);
+        var videoModal = new bootstrap.Modal(document.getElementById('playVideoModal'));
+        videoModal.show();
+    }
+
+    function deleteVideo(videoFileName) {
+        if (confirm('Are you sure you want to delete this video?')) {
+            $.ajax({
+                url: '@Url.Action("Delete", "Home")' + '?fileName=' + videoFileName,
+                type: 'POST',
+                success: function () {
+                    location.reload();
+                },
+                error: function () {
+                    alert('An error occurred while deleting the video.');
+                }
+            });
+        }
+    }
+</script>
