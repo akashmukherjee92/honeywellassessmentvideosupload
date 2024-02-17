@@ -141,7 +141,6 @@ public class HomeController : Controller
         }
     }
 
-    // Add this function in your HomeController.cs file
     private string FormatBytes(long bytes, int decimals = 2)
     {
         if (bytes == 0) return "0 Bytes";
