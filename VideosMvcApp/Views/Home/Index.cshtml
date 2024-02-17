@@ -5,7 +5,7 @@
     <form method="post" enctype="multipart/form-data" asp-action="Upload">
         <div class="form-group">
             <label for="files" class="font-weight-bold">Select Videos:</label>
-            <input type="file" class="form-control-file" name="files" id="files" multiple required />
+            <input type="file" class="form-control-file" name="files" id="files" accept=".mp4" multiple required />
         </div>
         <button type="submit" class="btn btn-primary">Upload</button>
     </form>
@@ -18,7 +18,8 @@
             <div class="col">
                 <div class="card h-100">
                     <div class="card-body">
-                        <h5 class="card-title">@video.FileName</h5>
+                        <h5 class="card-title">File Name - @video.FileName</h5>
+                        <h5 class="card-title">File Size - @video.FileSize</h5>
                         <button onclick="playVideo('@video.FileName')" class="btn btn-primary btn-sm me-2">Play Video</button>
                         <button onclick="deleteVideo('@video.FileName')" class="btn btn-danger btn-sm me-2">Delete Video</button>
                     </div>

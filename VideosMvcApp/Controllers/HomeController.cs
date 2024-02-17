@@ -5,6 +5,7 @@ public class HomeController : Controller
 {
     private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly ILogger<HomeController> _logger;
+    dynamic fileSize = "";
 
     public HomeController(IWebHostEnvironment webHostEnvironment, ILogger<HomeController> logger)
     {
@@ -25,10 +26,31 @@ public class HomeController : Controller
         {
             foreach (var file in files)
             {
-                if (file.Length > 0 && Path.GetExtension(file.FileName).ToLower() == ".mp4")
+                if (file.Length > 0)
                 {
-                    var fileName = $"{Guid.NewGuid().ToString()}_{file.FileName}";
+                    // Check file extension
+                    if (Path.GetExtension(file.FileName).ToLower() != ".mp4")
+                    {
+                        ViewBag.ErrorMessage = "Only .mp4 files are allowed.";
+                        return View("Error");
+                    }
+
+                    // Check file size (max 200 MB)
+                    if (file.Length > 200 * 1024 * 1024)
+                    {
+                        ViewBag.ErrorMessage = "File size exceeds the allowed limit (200 MB).";
+                        return View("Error");
+                    }
+
+                    var fileName = $"{file.FileName}";
                     var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "Media", fileName);
+                    fileSize = FormatBytes(file.Length);
+
+                    // If the file already exists, replace it
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
 
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
@@ -88,7 +110,8 @@ public class HomeController : Controller
                                    .Select(f => new VideoModel
                                    {
                                        Title = Path.GetFileNameWithoutExtension(f),
-                                       FileName = Path.GetFileName(f)
+                                       FileName = Path.GetFileName(f),
+                                       FileSize = Convert.ToString(FormatBytes(new FileInfo(Path.Combine(_webHostEnvironment.WebRootPath, "Media", Path.GetFileName(f))).Length))
                                    })
                                    .ToList();
 
@@ -115,4 +138,18 @@ public class HomeController : Controller
             return StatusCode(500, "Internal Server Error");
         }
     }
+
+    // Add this function in your HomeController.cs file
+    private string FormatBytes(long bytes, int decimals = 2)
+    {
+        if (bytes == 0) return "0 Bytes";
+
+        const int k = 1024;
+        string[] sizes = { "Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
+
+        int i = (int)Math.Floor(Math.Log(bytes) / Math.Log(k));
+
+        return string.Format("{0} {1}", Math.Round(bytes / Math.Pow(k, i), decimals), sizes[i]);
+    }
+
 }
