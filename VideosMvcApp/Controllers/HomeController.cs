@@ -119,7 +119,7 @@ public class HomeController : Controller
     }
 
     [HttpPost]
-    public IActionResult Delete(string fileName)
+    public IActionResult DeleteVideo(string fileName)
     {
         try
         {
@@ -128,7 +128,9 @@ public class HomeController : Controller
             if (System.IO.File.Exists(filePath))
             {
                 System.IO.File.Delete(filePath);
-                return RedirectToAction("Index");
+                
+                var videoFiles = GetVideoFiles();
+                return View("Index", videoFiles);
             }
 
             return NotFound();
